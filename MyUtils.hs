@@ -1,6 +1,6 @@
 
 
-module MyUtils (runOnFile,runOnFile2,(|>),split,count,freq,exists,(!!?),unique,unique',rotateMatrix,splitOn,joinWith,valueBetween, differences, tupleMap, repeatF, examine, removeNothing, indexes, zipWithIndexes, map2, map3, setElement, setElement2, setElement3, empty2, empty3, directions2D, directions3D, flattenMaybe) where
+module MyUtils (runOnFile,runOnFile2,runOnFileGroup,(|>),split,count,freq,exists,(!!?),unique,unique',rotateMatrix,splitOn,joinWith,valueBetween, differences, tupleMap, repeatF, examine, examineRepeat, removeNothing, indexes, zipWithIndexes, map2, map3, setElement, setElement2, setElement3, empty2, empty3, directions2D, directions3D, flattenMaybe) where
 import Control.Monad
 import Data.List
 import Data.Maybe
@@ -18,6 +18,17 @@ runOnFile input start = do
    let linesTrimmed = if last lines == "" then init lines else lines
    print $ start linesTrimmed
    hClose handle
+
+--Same as run on file, but splits the resulting array of strings by empty lines
+runOnFileGroup :: Show a => String -> ([[String]]->a) -> IO ()
+runOnFileGroup input start = do
+   handle <- openFile input ReadMode
+   contents <- hGetContents handle
+   let lines = splitOn '\n' contents
+   let linesTrimmed = if last lines == "" then init lines else lines
+   let res = splitOn "" linesTrimmed
+   print $ start res
+   hClose handle   
    
 runOnFile2 :: ([String]->String) -> String -> IO ()
 runOnFile2 start input = do
@@ -43,12 +54,15 @@ freq (x:xs) a = (if x==a then 1 else 0) + (freq xs a)
 exists :: (a->Bool) -> [a] -> Bool
 exists p xs = isJust (find p xs) 
 
+--Equivalent of !!, but returns Nothing if there is no such element in an array and Just a otherwise
 (!!?) :: [a] -> Int -> Maybe a
 list !!? index = if index<0 || index>=length list then Nothing else Just (list!!index)
 
+--Removes duplicates from a list
 unique :: Eq a  => [a] -> [a]
 unique xs = xs |> reverse |> unique' |> reverse
 
+--Removes duplicates from a list faster, but messes up the order
 unique' :: Eq a => [a] -> [a]
 unique' []     = []
 unique' (x:xs) = if freq xs x >0 then unique' xs else x:unique' xs
@@ -86,9 +100,11 @@ repeatF :: Int -> (a->a) -> a -> a
 repeatF 0 _ x = x
 repeatF n f x = repeatF (n-1) f (f x)
 
+--For testing: shows the function's output for a list of inputs
 examine :: Show a => Show b => (a->b) -> [a] -> IO()
 examine f xs = map (\x-> (x, f x)) xs |> map (\(a,b)-> (show a)++(": ")++(show b)) |> joinWith "\n" |> putStrLn
 
+--For testing: shows the results of a function's repeated applications
 examineRepeat :: Show a => (a->a) -> a -> Int -> IO()
 examineRepeat f a n = examine (\x-> (repeatF x f a)) [0..n]
 
