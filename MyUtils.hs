@@ -65,7 +65,7 @@ unique xs = xs |> reverse |> unique' |> reverse
 --Removes duplicates from a list faster, but messes up the order
 unique' :: Eq a => [a] -> [a]
 unique' []     = []
-unique' (x:xs) = if freq xs x >0 then unique' xs else x:unique' xs
+unique' (x:xs) = if x `elem` xs then unique' xs else x:unique' xs
 
 rotateMatrix :: [[a]] -> [[a]]
 rotateMatrix (x:xs) = foldr largerZip (map (\a->[a]) x) (reverse xs) |> map reverse
