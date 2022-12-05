@@ -1,6 +1,6 @@
 
 
-module MyUtils (runOnFile,runOnFile2,runOnFileGroup,(|>),split,count,freq,exists,(!!?),unique,unique',rotateMatrix,splitOn,joinWith,valueBetween, differences, tupleMap, repeatF, examine, examineRepeat, removeNothing, indexes, zipWithIndexes, map2, map3, setElement, setElement2, setElement3, empty2, empty3, directions2D, directions3D, flattenMaybe) where
+module MyUtils (readInt,runOnFile,runOnFile2,runOnFileGroup,(|>),split,count,freq,exists,(!!?),unique,unique',rotateMatrix,splitOn,joinWith,valueBetween, differences, tupleMap, repeatF, examine, examineRepeat, removeNothing, indexes, zipWithIndexes, map2, map3, setElement, setElement2, setElement3, changeElement, empty2, empty3, directions2D, directions3D, flattenMaybe) where
 import Control.Monad
 import Data.List
 import Data.Maybe
@@ -8,6 +8,9 @@ import System.IO
 
 (|>) :: a -> (a->b) -> b
 a |> f = f a
+
+readInt :: String -> Int
+readInt = read
 
 --Takes a file path and a function, runs that function on the file's contents, and prints the function's output. Trims the last line of the file if it's an empty line
 runOnFile :: Show a => String -> ([String]->a) -> IO ()
@@ -140,6 +143,11 @@ setElement2 i j x xs = (take j xs)++[setElement i x (xs!!j)]++(drop (j+1) xs)
 
 setElement3 :: Int -> Int -> Int -> a -> [[[a]]] -> [[[a]]]
 setElement3 i j k x xs = (take k xs)++[setElement2 i j x (xs!!k)]++(drop (k+1) xs)
+
+changeElement :: Int -> (a->a) -> [a] -> [a]
+changeElement i f [] = []
+changeElement 0 f (x:xs) = (f x):xs
+changeElement i f (x:xs) = x:(changeElement (i-1) f xs)
 
 directions2D :: [(Int,Int)]
 directions2D = [(-1,-1), (0,-1), (1,-1), (-1,0), (1,0), (-1,1), (0,1), (1,1)]
