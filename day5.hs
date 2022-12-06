@@ -5,7 +5,7 @@ type Crates = [[Char]]
 type Instruction = (Int, Int, Int) --Amount of repetitions, source, target
 
 parseCrates :: [String] -> Crates
-parseCrates lines = init lines |> map removeSpacing |> rotateMatrix |> map (dropWhile (==' '))
+parseCrates lines = init lines |> map removeSpacing |> transpose |> map (dropWhile (==' '))
 
 removeSpacing :: String -> String
 removeSpacing [_, x, _]    = [x]
