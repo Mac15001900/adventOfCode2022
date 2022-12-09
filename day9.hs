@@ -24,29 +24,26 @@ splitDir (D n) = take n $ repeat (D 1)
 splitDir (L n) = take n $ repeat (L 1)
 splitDir (R n) = take n $ repeat (R 1)
 
+moveHead :: Pos -> Direction -> Pos
+moveHead (x,y) (U n) = (x,  y+n)
+moveHead (x,y) (D n) = (x,  y-n)
+moveHead (x,y) (L n) = (x-n,y  )
+moveHead (x,y) (R n) = (x+n,y  )
+
 move :: State -> Direction -> State
-move ((xh,yh), t, his) (U n) = (h', catchUp t h', t:his) where h' = (xh,  yh+n)
-move ((xh,yh), t, his) (D n) = (h', catchUp t h', t:his) where h' = (xh,  yh-n)
-move ((xh,yh), t, his) (L n) = (h', catchUp t h', t:his) where h' = (xh-n,yh  )
-move ((xh,yh), t, his) (R n) = (h', catchUp t h', t:his) where h' = (xh+n,yh  )
+move (h, t, his) dir = (h', catchUp t h', t:his) where h' = moveHead h dir
 
 part1 :: [String] -> Int
 part1 lines = map read lines |> map splitDir |> concat |> foldl move ((0,0),(0,0),[]) |> (\(_,t,his)-> t:his) |> unique |> length
 
 type State2 = (Pos, [Pos], [Pos]) -- Position of the head, rope, and tail history
 
---catchUp2 :: [Pos] -> Pos -> [Pos] -- Rope, head, new rope
---catchUp2 t h = reverse $ catchUp2' t h
-
 catchUp2 :: [Pos] -> Pos -> [Pos] -- Rope, head, new rope
 catchUp2 [] _ = []
 catchUp2 (x:xs) h = h':(catchUp2 xs h')  where h' = catchUp x h
 
 move2 :: State2 -> Direction -> State2
-move2 ((xh,yh), t, his) (U n) = (h', catchUp2 t h', (last t):his) where h' = (xh,  yh+n)
-move2 ((xh,yh), t, his) (D n) = (h', catchUp2 t h', (last t):his) where h' = (xh,  yh-n)
-move2 ((xh,yh), t, his) (L n) = (h', catchUp2 t h', (last t):his) where h' = (xh-n,yh  )
-move2 ((xh,yh), t, his) (R n) = (h', catchUp2 t h', (last t):his) where h' = (xh+n,yh  )
+move2 (h, t, his) dir = (h', catchUp2 t h', (last t):his) where h' = moveHead h dir
 
 part2 :: [String] -> Int
 part2 lines = map read lines |> map splitDir |> concat |> foldl move2 ((0,0),take 9 $ repeat (0,0),[]) |> (\(_,t,his)-> (last t):his) |> unique |> length
