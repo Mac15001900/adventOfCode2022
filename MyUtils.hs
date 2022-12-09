@@ -1,6 +1,6 @@
 
 
-module MyUtils (readInt,runOnFile,runOnFile2,runOnFileGroup,(|>),split,count,freq,exists,(!!?),unique,unique',rotateMatrix,splitOn,joinWith,valueBetween, differences, tupleMap, repeatF, examine, examineRepeat, removeNothing, indexes, zipWithIndexes, map2, map3, setElement, setElement2, setElement3, changeElement, empty2, empty3, directions2D, directions3D, flattenMaybe) where
+module MyUtils (readInt,runOnFile,runOnFile2,runOnFileGroup,(|>),split,count,freq,exists,(!!?),unique,unique',rotateMatrix,splitOn,joinWith,valueBetween, differences, tupleMap, repeatF, examine, examineRepeat, removeNothing, indexes, zipWithIndexes, zip2d, zip3d, map2, map3, setElement, setElement2, setElement3, changeElement, empty2, empty3, directions2D, directions3D, flattenMaybe) where
 import Control.Monad
 import Data.List
 import Data.Maybe
@@ -122,6 +122,18 @@ indexes a = [0..(length a)-1]
 
 zipWithIndexes :: [a] -> [(a,Int)]
 zipWithIndexes a = zip a (indexes a)
+
+
+zip2d :: [[a]] -> [[b]] -> [[(a,b)]]
+zip2d [] _ = []
+zip2d _ [] = []
+zip2d (a:as) (b:bs) = (zip a b):(zip2d as bs)
+
+zip3d :: [[[a]]] -> [[[b]]] -> [[[(a,b)]]]
+zip3d [] _ = []
+zip3d _ [] = []
+zip3d (a:as) (b:bs) = (zip2d a b):(zip3d as bs)
+
 
 map2 :: (a->b) -> [[a]] -> [[b]]
 map2 f = map (map f)
