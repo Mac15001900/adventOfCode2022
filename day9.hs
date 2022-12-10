@@ -38,8 +38,8 @@ part1 lines = map read lines |> map splitDir |> concat |> foldl move ((0,0),(0,0
 
 type State2 = (Pos, [Pos], [Pos]) -- Position of the head, rope, and tail history
 
-catchUp2 :: [Pos] -> Pos -> [Pos] -- Rope, head, new rope
-catchUp2 [] _ = []
+catchUp2 :: [Pos] -> Pos -> [Pos] -- Rope -> head -> new rope
+catchUp2 [] _     = []
 catchUp2 (x:xs) h = h':(catchUp2 xs h')  where h' = catchUp x h
 
 move2 :: State2 -> Direction -> State2
