@@ -1,6 +1,6 @@
 
 
-module MyUtils (readInt,runOnFile,runOnFile2,runOnFileGroup,(|>),split,count,freq,exists,(!!?),unique,unique',rotateMatrix,splitOn,joinWith,valueBetween, differences, tupleMap, repeatF, examine, examineRepeat, removeNothing, indexes, zipWithIndexes, zip2d, zip3d, map2, map3, setElement, setElement2, setElement3, changeElement, empty2, empty3, directions2D, directions3D, flattenMaybe) where
+module MyUtils (readInt,runOnFile,runOnFile2,runOnFileGroup,(|>),split,count,freq,exists,(!!?),unique,unique',rotateMatrix,splitOn,joinWith,valueBetween, differences, tupleMap, repeatF, examine, examineRepeat, removeNothing, indexes, zipWithIndexes, zip2d, zip3d, map2, map3, setElement, setElement2, setElement3, changeElement, empty2, empty3, directions2D, directions3D, flattenMaybe, combinations, findIndex2, fst3, snd3, thd3, fst4, snd4, thd4, frh4, mapFst, mapSnd) where
 import Control.Monad
 import Data.List
 import Data.Maybe
@@ -172,11 +172,50 @@ flattenMaybe Nothing = Nothing
 flattenMaybe (Just Nothing) = Nothing
 flattenMaybe (Just (Just a)) = Just a
 
-tempCombine ::  [Int] -> [[Int]] -> [[Int]]
-tempCombine ys xss = map (\y-> map (\xs-> y:xs) xss) ys |> concat
+combinations :: [a] -> [b] -> [(a,b)]
+combinations [] _ = []
+combinations (a:as) bs = (map (\b-> (a,b)) bs)++(combinations as bs)
+
+{-
+findIndex :: (a->Bool) -> [a] -> Int
+findIndex p []     = error "Element not found"
+findIndex p (x:xs) = if p x then 0 else 1+(findIndex p xs)
+-}
+
+findIndex2 :: (a->Bool) ->[[a]] -> (Int, Int)
+findIndex2 p []           = error "Element not found"
+findIndex2 p (xs:xss) = case findIndex p xs of
+   Nothing -> mapSnd (+1) (findIndex2 p xss)
+   (Just i)-> (i,0)
 
 
+--findIndex2 p ([]:xss)      = mapSnd (+1) (findIndex2 p xss)
+--findIndex2 p ((x:xs):xss) = if p x then (0,0) else mapFst (+1) (findIndex2 p (xs:xss))
 
 
+mapFst :: (a->c) -> (a,b) -> (c, b) 
+mapFst f (a,b) = (f a, b)
 
+mapSnd :: (b->c) -> (a,b) -> (a,c) 
+mapSnd f (a,b) = (a, f b)
 
+fst3 :: (a,b,c) -> a
+fst3 (a,b,c) = a
+
+snd3 :: (a,b,c) -> b
+snd3 (a,b,c) = b
+
+thd3 :: (a,b,c) -> c
+thd3 (a,b,c) = c
+
+fst4 :: (a,b,c,d) -> a
+fst4 (a,b,c,d) = a
+
+snd4 :: (a,b,c,d) -> b
+snd4 (a,b,c,d) = b
+
+thd4 :: (a,b,c,d) -> c
+thd4 (a,b,c,d) = c
+
+frh4 :: (a,b,c,d) -> d
+frh4 (a,b,c,d) = d
