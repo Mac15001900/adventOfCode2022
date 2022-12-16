@@ -1,6 +1,6 @@
 
 
-module MyUtils (readInt,runOnFile,runOnFile2,runOnFileGroup,(|>),split,count,freq,exists,(!!?),unique,unique',rotateMatrix,splitOn,joinWith,valueBetween, differences, tupleMap, repeatF, examine, examineRepeat, removeNothing, indexes, zipWithIndexes, zip2d, zip3d, map2, map3, setElement, setElement2, setElement3, changeElement, empty2, empty3, directions2D, directions3D, flattenMaybe, combinations, findIndex2, fst3, snd3, thd3, fst4, snd4, thd4, frh4, mapFst, mapSnd) where
+module MyUtils (readInt,runOnFile,runTestOnFile,runOnFile2,runOnFileGroup,(|>),split,count,freq,exists,(!!?),unique,unique',rotateMatrix,splitOn,joinWith,valueBetween, differences, tupleMap, repeatF, examine, examineRepeat, removeNothing, indexes, zipWithIndexes, zip2d, zip3d, map2, map3, filter2, filter3, setElement, setElement2, setElement3, changeElement, empty2, empty3, directions2D, directions3D, flattenMaybe, combinations, findIndex2, aStar, fst3, snd3, thd3, fst4, snd4, thd4, frh4, mapFst, mapSnd) where
 import Control.Monad
 import Data.List
 import Data.Maybe
@@ -20,6 +20,15 @@ runOnFile input start = do
    let lines = splitOn '\n' contents
    let linesTrimmed = if last lines == "" then init lines else lines
    print $ start linesTrimmed
+   hClose handle
+
+runTestOnFile :: String -> ([String]->IO()) -> IO ()
+runTestOnFile input start = do
+   handle <- openFile input ReadMode
+   contents <- hGetContents handle
+   let lines = splitOn '\n' contents
+   let linesTrimmed = if last lines == "" then init lines else lines
+   start linesTrimmed
    hClose handle
 
 --Same as run on file, but splits the resulting array of strings by empty lines
@@ -141,6 +150,12 @@ map2 f = map (map f)
 map3 :: (a->b) -> [[[a]]] -> [[[b]]]
 map3 f = map (map (map f))
 
+filter2 :: (a->Bool) -> [[a]] -> [[a]]
+filter2 p = map (filter p)
+
+filter3 :: (a->Bool) -> [[[a]]] -> [[[a]]]
+filter3 p = map2 (filter p)
+
 empty2 :: Eq a => [[a]] -> Bool
 empty2 xs = not $ exists (/=[]) xs
 
@@ -192,6 +207,28 @@ findIndex2 p (xs:xss) = case findIndex p xs of
 --findIndex2 p ([]:xss)      = mapSnd (+1) (findIndex2 p xss)
 --findIndex2 p ((x:xs):xss) = if p x then (0,0) else mapFst (+1) (findIndex2 p (xs:xss))
 
+--------------------------- A*
+
+--               Neighbours         Heuristic  Start  isTarget    Cost of shortest path
+aStar :: Eq a => (a->[(a, Int)]) -> (a->Int) -> a -> (a->Bool) -> Int
+aStar neighbours heuristic start target = aStar' neighbours heuristic [(start, 0, heuristic start)] [] target
+
+--                neighbours        heuristic    frontier          visited  isTarget
+aStar' :: Eq a => (a->[(a, Int)]) -> (a->Int) -> [(a, Int, Int)] ->  [a] -> (a->Bool) -> Int
+aStar' _  _ []              _  _ = error "Explored everything, no target found"
+aStar' ns h (next:frontier) vs t | t (fst3 next)         = snd3 next
+                                 | (fst3 next) `elem` vs = aStar' ns h frontier vs t
+                                 | otherwise             = aStar' ns h (expandFrontier frontier newNodes) ((fst3 next):vs) t where
+                                      newNodes = ns (fst3 next) |> filter (\(a,_)-> not (a `elem` vs)) |> map (\(a,c) -> (a, c + snd3 next, h a)) 
+
+expandFrontier :: [(a, Int, Int)] -> [(a, Int, Int)] -> [(a, Int, Int)]
+expandFrontier frontier newNodes = foldl insertNode frontier newNodes
+
+insertNode :: [(a, Int, Int)] -> (a, Int, Int) -> [(a, Int, Int)]
+insertNode [] node = [node]
+insertNode ((a1,c1,h1):xs) (a2,c2,h2) = if c2+h2 < c1+h1 then (a2,c2,h2):(a1,c1,h1):xs else (a1,c1,h1):(insertNode xs (a2,c2,h2))
+
+---------------------------
 
 mapFst :: (a->c) -> (a,b) -> (c, b) 
 mapFst f (a,b) = (f a, b)
