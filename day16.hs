@@ -44,6 +44,6 @@ runAll elephants input = explore (buildDistanceMap parsed) (actors, buildRooms p
 part1 = runAll 0
 part2 = runAll 1
 
-main = runOnFile "input16.txt" runAll 2 --Tried this for fun. 5 hours later it's still running.
+main = runOnFile "input16.txt" runAll 2 --Tried this for fun. 5 hours later it's still running. UPDATE: finished after 10 hours, with 2428 (328 more than with 1 elephant)
 
 test = ["Valve AA has flow rate=0; tunnels lead to valves DD, II, BB", "Valve BB has flow rate=13; tunnels lead to valves CC, AA", "Valve CC has flow rate=2; tunnels lead to valves DD, BB", "Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE", "Valve EE has flow rate=3; tunnels lead to valves FF, DD", "Valve FF has flow rate=0; tunnels lead to valves EE, GG", "Valve GG has flow rate=0; tunnels lead to valves FF, HH", "Valve HH has flow rate=22; tunnel leads to valve GG", "Valve II has flow rate=0; tunnels lead to valves AA, JJ", "Valve JJ has flow rate=21; tunnel leads to valve II"]
