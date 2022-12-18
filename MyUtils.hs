@@ -1,6 +1,6 @@
 
 
-module MyUtils (readInt,runOnFile,runTestOnFile,runOnFile2,runOnFileGroup,(|>),split,count,freq,exists,(!!?),unique,unique',rotateMatrix,splitOn,joinWith,valueBetween, differences, tupleMap, repeatF, examine, examineRepeat, removeNothing, indexes, zipWithIndexes, zip2d, zip3d, map2, map3, filter2, filter3, setElement, setElement2, setElement3, changeElement, empty2, empty3, directions2D, directions3D, flattenMaybe, combinations, findIndex2, aStar, fst3, snd3, thd3, fst4, snd4, thd4, frh4, mapFst, mapSnd) where
+module MyUtils (readInt,runOnFile,runTestOnFile,runOnFile2,runOnFileGroup,(|>),split,count,freq,exists,(!!?),unique,unique',rotateMatrix,splitOn,joinWith,valueBetween, differences, tupleMap, repeatF, examine, examineRepeat, removeNothing, indexes, zipWithIndexes, zip2d, zip3d, map2, map3, filter2, filter3, setElement, setElement2, setElement3, changeElement, empty2, empty3, directions2D, directions3D, flattenMaybe, combinations, findIndex2, aStar, tryAStar, fst3, snd3, thd3, fst4, snd4, thd4, frh4, mapFst, mapSnd) where
 import Control.Monad
 import Data.List
 import Data.Maybe
@@ -211,12 +211,15 @@ findIndex2 p (xs:xss) = case findIndex p xs of
 
 --               Neighbours         Heuristic  Start  isTarget    Cost of shortest path
 aStar :: Eq a => (a->[(a, Int)]) -> (a->Int) -> a -> (a->Bool) -> Int
-aStar neighbours heuristic start target = aStar' neighbours heuristic [(start, 0, heuristic start)] [] target
+aStar neighbours heuristic start target = aStar' neighbours heuristic [(start, 0, heuristic start)] [] target |> fromJust
+
+tryAStar :: Eq a => (a->[(a, Int)]) -> (a->Int) -> a -> (a->Bool) -> Maybe Int
+tryAStar neighbours heuristic start target = aStar' neighbours heuristic [(start, 0, heuristic start)] [] target
 
 --                neighbours        heuristic    frontier          visited  isTarget
-aStar' :: Eq a => (a->[(a, Int)]) -> (a->Int) -> [(a, Int, Int)] ->  [a] -> (a->Bool) -> Int
-aStar' _  _ []              _  _ = error "Explored everything, no target found"
-aStar' ns h (next:frontier) vs t | t (fst3 next)         = snd3 next
+aStar' :: Eq a => (a->[(a, Int)]) -> (a->Int) -> [(a, Int, Int)] ->  [a] -> (a->Bool) -> Maybe Int
+aStar' _  _ []              _  _ = Nothing --error "Explored everything, no target found"
+aStar' ns h (next:frontier) vs t | t (fst3 next)         = Just (snd3 next)
                                  | (fst3 next) `elem` vs = aStar' ns h frontier vs t
                                  | otherwise             = aStar' ns h (expandFrontier frontier newNodes) ((fst3 next):vs) t where
                                       newNodes = ns (fst3 next) |> filter (\(a,_)-> not (a `elem` vs)) |> map (\(a,c) -> (a, c + snd3 next, h a)) 
