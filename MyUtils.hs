@@ -1,6 +1,6 @@
 
 
-module MyUtils (readInt,runOnFile,runTestOnFile,runOnFile2,runOnFileGroup,(|>),split,count,freq,exists,(!!?),unique,unique',rotateMatrix,splitOn,joinWith,valueBetween, differences, tupleMap, repeatF, examine, examineRepeat, removeNothing, indexes, zipWithIndexes, indexesWhere, zip2d, zip3d, map2, map3, filter2, filter3, setElement, setElement2, setElement3, changeElement, empty2, empty3, directions2D, directions3D, flattenMaybe, combinations, findIndex2, aStar, tryAStar, fst3, snd3, thd3, fst4, snd4, thd4, frh4, mapFst, mapSnd) where
+module MyUtils (readInt,runOnFile,runTestOnFile,runOnFile2,runOnFileGroup,(|>),split,count,freq,exists,(!!?),unique,unique',rotateMatrix,splitOn,joinWith,valueBetween, differences, tupleMap, repeatF, examine, examineRepeat, removeNothing, indexes, zipWithIndexes, zipWithIndexes2, indexesWhere, zip2d, zip3d, map2, map3, filter2, filter3, setElement, setElement2, setElement3, changeElement, empty2, empty3, directions2D, directions3D, flattenMaybe, combinations, findIndex2, aStar, tryAStar, fst3, snd3, thd3, fst4, snd4, thd4, frh4, mapFst, mapSnd) where
 import Control.Monad
 import Data.List
 import Data.Maybe
@@ -131,6 +131,9 @@ indexes a = [0..(length a)-1]
 
 zipWithIndexes :: [a] -> [(a,Int)]
 zipWithIndexes a = zip a (indexes a)
+
+zipWithIndexes2 :: [[a]] -> [[(a,(Int,Int))]]
+zipWithIndexes2 a =  map zipWithIndexes a |> zipWithIndexes |> map (\(as, y)-> map (\(p, x)-> (p,(x,y))) as)
 
 indexesWhere :: (a->Bool) -> [a] -> [Int]
 indexesWhere p xs = zipWithIndexes xs |> filter (p . fst) |> map snd
